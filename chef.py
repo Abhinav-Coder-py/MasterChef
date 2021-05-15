@@ -14,3 +14,6 @@ for row in rows:
                         "Recipe_Desc": row[2]})
 
 recipe_json = json.loads(json.dumps({"Recipes": object_list}, indent=1))
+
+for recipe in recipe_json["Recipes"]:
+    recipe_list.append(recipe["Recipe_Name"])
