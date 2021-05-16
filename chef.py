@@ -28,12 +28,41 @@ for row in order_rows:
 
 order_json = json.loads(json.dumps({"Orders": object_list2}, indent=1))
 
-username = input("Username: ")
+# username = input("Username: ")
 
 if len(order_json["Orders"]) == 0:
     date = datetime.datetime.now().date()
     recipe = random.choice(recipe_list)
     cursor.execute("INSERT INTO MasterChef VALUES(?, ?, ?, ?)",
-                   (0, "Abhinav", recipe, date))
+                   (1, "Abhinav", recipe, date))
     connection.commit()
     print(recipe)
+
+else:
+    order_id = order_json["Orders"][-1]["Order_ID"]
+    pos_check = (order_id - 6) >= 0
+    if not pos_check:
+        date = datetime.datetime.now()
+        prev_recs = []
+        for order in order_json["Orders"]:
+            prev_recs.append(order["Order_Recipe"])
+
+        today_recipe = random.choice([rec for rec in recipe_list if (rec not in prev_recs)])
+        cursor.execute("INSERT INTO MasterChef VALUES(?, ?, ?, ?)",
+                       (order_id + 1, "Abhinav", today_recipe, date))
+        connection.commit()
+        print(today_recipe)
+
+    else:
+        last_week_recipe = order_json["Orders"][order_id - 6]["Order_Recipe"]
+        date = datetime.datetime.now().date()
+        prev_recs = []
+        for order in order_json["Orders"]:
+            if order["Order_ID"] >= order_id - 6:
+                prev_recs.append(order["Order_Recipe"])
+        today_recipe = random.choice([rec for rec in recipe_list if rec != last_week_recipe
+                                      and (rec not in prev_recs)])
+        cursor.execute("INSERT INTO MasterChef VALUES(?, ?, ?, ?)",
+                       (order_id + 1, "Abhinav", today_recipe, date))
+        connection.commit()
+        print(today_recipe)
