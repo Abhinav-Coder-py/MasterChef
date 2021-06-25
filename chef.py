@@ -77,3 +77,5 @@ else:
         connection.commit()
         print(today_recipe)
         print(get_rec_desc(recipe_json, today_recipe))
+        
+close = input("Press anything to exit! ")
